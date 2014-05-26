@@ -1,0 +1,277 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+#第12次练习B题题解
+
+题目链接：[http://vjudge.net/contest/view.action?cid=47127#problem/B](http://vjudge.net/contest/view.action?cid=47127#problem/B)
+
+##题目大意：
+这道题目就是说要向n（n<=100）个经纪人散步谣言，数据给出的是跟第i人有联系的人、第i人跟他有联系的人联系所需的时间t。问的是应该从哪个人开始散布谣言，时间才能最短，并且求这个最短时间。
+
+输入：
+
+　　多个测试案例，n==0时结束。
+
+　　接下来共n行，第i行：
+
+　　联系人数，pair(联系人，时间),pair(联系人，时间)...
+
+##思路:
+
+利用floyd求任意两点的最小距离，然后找出起始点，使得该点到其它所有点的时间总和最小。输出该点，并输出与该点最远的点的距离。
+
+特殊情况：可能对于某个测试样例，无论从哪一点开始，均无法完整到达其他所有点，也即谣言无法完全传播，那么无解，输出disjoint。判断方法为，最小时间总和大于无穷大（某个大数）。
+
+算法步骤：
+
+1. 输入
+2. Floyd
+3. 找起始点
+4. 判断是否有解
+5. 输出
+
+##算法复杂度：
+
+Floyd复杂度为$O(n^3)$
+
+查找起始点复杂度为$O(n^2)$
+
+查找最远点复杂度为$O(n)$
+
+所以总的复杂度为$O(n^3)$
+
+##源程序：
+~~~~{cpp}
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+#define REP(i, n) for(int i=0; i<n; i++)
+
+const int M = 1<<28, MAX = 105;
+int g[MAX][MAX], n;
+
+void floyd() {
+    REP(k,n)
+        REP(i,n)
+            REP(j,n)
+                g[i+1][j+1] = min(g[i+1][j+1],g[i+1][k+1]+g[k+1][j+1]);
+}
+
+int main(int argc, char* argv[]) {
+    ios_base::sync_with_stdio(false);
+    while(cin >> n && n!=0) {
+        REP(i,n)
+            REP(j,n)
+                g[i+1][j+1] = i==j?0:M;
+        REP(e,n) {
+            int t;
+            cin >> t;
+            int v,w;
+            REP(i,t) {
+                cin >> v >> w;
+                g[e+1][v] = w;
+            }
+        }
+        floyd();
+        int p,m = M;
+        REP(i,n) {
+            int sum=0;
+            REP(j,n)
+                sum += g[i+1][j+1];
+            if(sum<m) {
+                m = sum;
+                p = i+1;
+            }
+        }
+        if(m>=M)
+            cout << "disjoint" << endl;
+        else {
+            int t = 0;
+            REP(i,n)
+                t = t<g[p][i+1]?g[p][i+1]:t;
+            cout << p << " " << t << endl;
+        }
+    }
+    return 0;
+}
+~~~~
+
+> 评测系统上运行结果:Accepted,运行时间 0ms,占用内存 708KB.
+
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+<h1 id="12b">第12次练习B题题解</h1>
+
+<p>题目链接：<a href="http://vjudge.net/contest/view.action?cid=47127#problem/B">http://vjudge.net/contest/view.action?cid=47127#problem/B</a></p>
+
+<h2 id="">题目大意：</h2>
+
+<p>这道题目就是说要向n（n&lt;=100）个经纪人散步谣言，数据给出的是跟第i人有联系的人、第i人跟他有联系的人联系所需的时间t。问的是应该从哪个人开始散布谣言，时间才能最短，并且求这个最短时间。</p>
+
+<p>输入：</p>
+
+<p>　　多个测试案例，n==0时结束。</p>
+
+<p>　　接下来共n行，第i行：</p>
+
+<p>　　联系人数，pair(联系人，时间),pair(联系人，时间)...</p>
+
+<h2 id="">思路:</h2>
+
+<p>利用floyd求任意两点的最小距离，然后找出起始点，使得该点到其它所有点的时间总和最小。输出该点，并输出与该点最远的点的距离。</p>
+
+<p>特殊情况：可能对于某个测试样例，无论从哪一点开始，均无法完整到达其他所有点，也即谣言无法完全传播，那么无解，输出disjoint。判断方法为，最小时间总和大于无穷大（某个大数）。</p>
+
+<p>算法步骤：</p>
+
+<ol>
+<li>输入</li>
+<li>Floyd</li>
+<li>找起始点</li>
+<li>判断是否有解</li>
+<li>输出</li>
+</ol>
+
+<h2 id="">算法复杂度：</h2>
+
+<p>Floyd复杂度为<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-638-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-4784" style="width: 3.353em; display: inline-block;"><span style="display: inline-block; position: relative; width: 2.652em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.702em 1000.002em 3.103em -0.398em); top: -2.698em; left: 0.003em;"><span class="mrow" id="MathJax-Span-4785"><span class="mi" id="MathJax-Span-4786" style="font-family: MathJax_Math; font-style: italic;">O</span><span class="mo" id="MathJax-Span-4787" style="font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-4788"><span style="display: inline-block; position: relative; width: 1.052em; height: 0px;"><span style="position: absolute; clip: rect(1.902em 1000.002em 2.652em -0.447em); top: -2.498em; left: 0.003em;"><span class="mi" id="MathJax-Span-4789" style="font-family: MathJax_Math; font-style: italic;">n</span><span style="display: inline-block; width: 0px; height: 2.502em;"></span></span><span style="position: absolute; top: -2.798em; left: 0.603em;"><span class="mn" id="MathJax-Span-4790" style="font-size: 70.7%; font-family: MathJax_Main;">3</span><span style="display: inline-block; width: 0px; height: 2.452em;"></span></span></span></span><span class="mo" id="MathJax-Span-4791" style="font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.702em;"></span></span></span><span style="border-left-width: 0.003em; border-left-style: solid; display: inline-block; overflow: hidden; width: 0px; height: 1.503em; vertical-align: -0.372em;"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-638">O(n^3)</script></p>
+
+<p>查找起始点复杂度为<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-639-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-4792" style="width: 3.353em; display: inline-block;"><span style="display: inline-block; position: relative; width: 2.652em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.702em 1000.002em 3.103em -0.398em); top: -2.698em; left: 0.003em;"><span class="mrow" id="MathJax-Span-4793"><span class="mi" id="MathJax-Span-4794" style="font-family: MathJax_Math; font-style: italic;">O</span><span class="mo" id="MathJax-Span-4795" style="font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-4796"><span style="display: inline-block; position: relative; width: 1.052em; height: 0px;"><span style="position: absolute; clip: rect(1.902em 1000.002em 2.652em -0.447em); top: -2.498em; left: 0.003em;"><span class="mi" id="MathJax-Span-4797" style="font-family: MathJax_Math; font-style: italic;">n</span><span style="display: inline-block; width: 0px; height: 2.502em;"></span></span><span style="position: absolute; top: -2.798em; left: 0.603em;"><span class="mn" id="MathJax-Span-4798" style="font-size: 70.7%; font-family: MathJax_Main;">2</span><span style="display: inline-block; width: 0px; height: 2.452em;"></span></span></span></span><span class="mo" id="MathJax-Span-4799" style="font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.702em;"></span></span></span><span style="border-left-width: 0.003em; border-left-style: solid; display: inline-block; overflow: hidden; width: 0px; height: 1.503em; vertical-align: -0.372em;"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-639">O(n^2)</script></p>
+
+<p>查找最远点复杂度为<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-640-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-4800" style="width: 2.702em; display: inline-block;"><span style="display: inline-block; position: relative; width: 2.152em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.802em 1000.002em 3.103em -0.398em); top: -2.698em; left: 0.003em;"><span class="mrow" id="MathJax-Span-4801"><span class="mi" id="MathJax-Span-4802" style="font-family: MathJax_Math; font-style: italic;">O</span><span class="mo" id="MathJax-Span-4803" style="font-family: MathJax_Main;">(</span><span class="mi" id="MathJax-Span-4804" style="font-family: MathJax_Math; font-style: italic;">n</span><span class="mo" id="MathJax-Span-4805" style="font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.702em;"></span></span></span><span style="border-left-width: 0.003em; border-left-style: solid; display: inline-block; overflow: hidden; width: 0px; height: 1.378em; vertical-align: -0.372em;"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-640">O(n)</script></p>
+
+<p>所以总的复杂度为<span class="MathJax_Preview"></span><span class="MathJax" id="MathJax-Element-641-Frame" role="textbox" aria-readonly="true" style=""><nobr><span class="math" id="MathJax-Span-4806" style="width: 3.353em; display: inline-block;"><span style="display: inline-block; position: relative; width: 2.652em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.702em 1000.002em 3.103em -0.398em); top: -2.698em; left: 0.003em;"><span class="mrow" id="MathJax-Span-4807"><span class="mi" id="MathJax-Span-4808" style="font-family: MathJax_Math; font-style: italic;">O</span><span class="mo" id="MathJax-Span-4809" style="font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-4810"><span style="display: inline-block; position: relative; width: 1.052em; height: 0px;"><span style="position: absolute; clip: rect(1.902em 1000.002em 2.652em -0.447em); top: -2.498em; left: 0.003em;"><span class="mi" id="MathJax-Span-4811" style="font-family: MathJax_Math; font-style: italic;">n</span><span style="display: inline-block; width: 0px; height: 2.502em;"></span></span><span style="position: absolute; top: -2.798em; left: 0.603em;"><span class="mn" id="MathJax-Span-4812" style="font-size: 70.7%; font-family: MathJax_Main;">3</span><span style="display: inline-block; width: 0px; height: 2.452em;"></span></span></span></span><span class="mo" id="MathJax-Span-4813" style="font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.702em;"></span></span></span><span style="border-left-width: 0.003em; border-left-style: solid; display: inline-block; overflow: hidden; width: 0px; height: 1.503em; vertical-align: -0.372em;"></span></span></nobr></span><script type="math/tex" id="MathJax-Element-641">O(n^3)</script></p>
+
+<h2 id="">源程序：</h2>
+
+<pre class=" language-cpp"><code class=" language-cpp"><span class="token property">#include </span>
+<span class="token property">#include </span>
+<span class="token keyword">using</span> <span class="token keyword">namespace</span> std<span class="token punctuation">;</span>
+
+<span class="token property">#define REP(i, n) for(int i=0; i&gt; n &amp;&amp; n!=0) {</span>
+        <span class="token function">REP<span class="token punctuation">(</span></span>i<span class="token punctuation">,</span>n<span class="token punctuation">)</span>
+            <span class="token function">REP<span class="token punctuation">(</span></span>j<span class="token punctuation">,</span>n<span class="token punctuation">)</span>
+                g<span class="token punctuation">[</span>i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> i<span class="token operator">==</span>j<span class="token operator">?</span><span class="token number">0</span><span class="token operator">:</span>M<span class="token punctuation">;</span>
+        <span class="token function">REP<span class="token punctuation">(</span></span>e<span class="token punctuation">,</span>n<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">int</span> t<span class="token punctuation">;</span>
+            cin &gt;&gt; t<span class="token punctuation">;</span>
+            <span class="token keyword">int</span> v<span class="token punctuation">,</span>w<span class="token punctuation">;</span>
+            <span class="token function">REP<span class="token punctuation">(</span></span>i<span class="token punctuation">,</span>t<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                cin &gt;&gt; v &gt;&gt; w<span class="token punctuation">;</span>
+                g<span class="token punctuation">[</span>e<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">[</span>v<span class="token punctuation">]</span> <span class="token operator">=</span> w<span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token function">floyd<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> p<span class="token punctuation">,</span>m <span class="token operator">=</span> M<span class="token punctuation">;</span>
+        <span class="token function">REP<span class="token punctuation">(</span></span>i<span class="token punctuation">,</span>n<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">int</span> sum<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
+            <span class="token function">REP<span class="token punctuation">(</span></span>j<span class="token punctuation">,</span>n<span class="token punctuation">)</span>
+                sum <span class="token operator">+</span><span class="token operator">=</span> g<span class="token punctuation">[</span>i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>sum<span class="token operator">=</span>M<span class="token punctuation">)</span>
+            cout <span class="token operator">&lt;</span><span class="token operator">&lt;</span> <span class="token string">"disjoint"</span> <span class="token operator">&lt;</span><span class="token operator">&lt;</span> endl<span class="token punctuation">;</span>
+        <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token keyword">int</span> t <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+            <span class="token function">REP<span class="token punctuation">(</span></span>i<span class="token punctuation">,</span>n<span class="token punctuation">)</span>
+                t <span class="token operator">=</span> t</code></pre><code class=" language-cpp">
+
+
+  评测系统上运行结果<span class="token operator">:</span>Accepted<span class="token punctuation">,</span>运行时间 0ms<span class="token punctuation">,</span>占用内存 708KB<span class="token punctuation">.</span>
+</code>
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "StockbrokerGrapevine.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>
