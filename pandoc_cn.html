@@ -25,21 +25,21 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-唉都快期末了，我居然没事找事花了一个晚上的时间折腾。
+&emsp;唉都快期末了，我居然没事找事花了一个晚上的时间折腾。
 
-先是想晚饭时间想简单学学markdown语法，然后突然觉得很有必要用它来写pdf，实验报告什么的就方便多了。
+&emsp;先是想晚饭时间想简单学学markdown语法，然后突然觉得很有必要用它来写pdf，实验报告什么的就方便多了。
 
-于是，就开始找，找到了pandoc，恩，好的来装。装完了，报错。哦，没装latex，T\_T请原谅我这个逗逼的freshbird～
+&emsp;于是，就开始找，找到了pandoc，恩，好的来装。装完了，报错。哦，没装latex，T\_T请原谅我这个逗逼的freshbird～
 
-好吧，latex要装啥版本呢？继续找，恩貌似texlive不错，好的我先装个base版的就好，190M+好大的包，慢慢下……装完了！试试～报错= =。好吧肯定是没装完整，我又继续装了extra版本，恩前前后后3次加装，一共500M+应该有吧…为何如此大= =…
+&emsp;好吧，latex要装啥版本呢？继续找，恩貌似texlive不错，好的我先装个base版的就好，190M+好大的包，慢慢下……装完了！试试～报错= =。好吧肯定是没装完整，我又继续装了extra版本，恩前前后后3次加装，一共500M+应该有吧…为何如此大= =…
 
-好，总算装完了，试试…还是报错！哦，是不支持中文，一找发现需要CJK包，装完，继续转不了中文pdf…google了很久，发现是xelatex(latex的编译engine之一)没法跟CJK一起用，好吧有个xeCJK，恩继续找方法安装，逛了xeCJK官网，下了个源码包，找不到正确的安装方法，放弃之……然后偶然中发现latex+CJK可以用，原来如此…
+&emsp;好，总算装完了，试试…还是报错！哦，是不支持中文，一找发现需要CJK包，装完，继续转不了中文pdf…google了很久，发现是xelatex(latex的编译engine之一)没法跟CJK一起用，好吧有个xeCJK，恩继续找方法安装，逛了xeCJK官网，下了个源码包，找不到正确的安装方法，放弃之……然后偶然中发现latex+CJK可以用，原来如此…
 
-但是没办法啊，我要转markdown一定要用pandoc，pandoc需要xelatex，xelatex又只能用xeCJK，认命，继续找……T_T
+&emsp;但是没办法啊，我要转markdown一定要用pandoc，pandoc需要xelatex，xelatex又只能用xeCJK，认命，继续找……T_T
 
-终于！找到了一个blog，终于安装成功，并且，还提供了网友修改好了的template，最终测试成功～总算搭好了环境！
+&emsp;终于！找到了一个blog，终于安装成功，并且，还提供了网友修改好了的template，最终测试成功～总算搭好了环境！
 
-接下来记录备忘，同时感谢网上大神的分享：
+&emsp;接下来记录备忘，同时感谢网上大神的分享：
 
 1.安装texlive
 
@@ -53,9 +53,7 @@ sudo apt-get install texlive-latex-extra
 sudo apt-get install latex-cjk-xcjk cjk-latex latex-cjk-chinese
 ```
 
-3.安装必要的中文字体，网上有许多教程
-
-这里引用原文提供的字体
+3.安装必要的中文字体，网上有许多教程，这里引用原文提供的字体
 ```{sh}
 sudo apt-get install xfonts-wqy ttf-wqy-microhei ttf-wqy-zenhei
 ```
@@ -302,31 +300,31 @@ $endfor$
 \end{document}
 ```
 
-* 新建1.md文件
+* 新建1.md文件，由于转义的原因，需要去掉下边` \``` `的` \ `
 ~~~~{md}
 #this is my first md file
 
 $x^2=y$
 
-\`\`\`python
+\```python
 import sys
 import time
 import os
 from threading import Thread
 a = Thread()
 print 'hello world'
-\`\`\`
+\```
 
 这是中文字符～
 
-\`\`\`cpp
+\```cpp
 #include <iostream>
 using namespace std;
 int main() {
     cout << "hello world" << endl;
     return 0;
 }
-\`\`\`
+\```
 
 ~~~~
 
@@ -335,7 +333,7 @@ int main() {
 pandoc --latex-engine=xelatex --template=pandoc.template 1.md -o 1.pdf
 ```
 
-好吧，就先写这么多，睡觉咯～
+&emsp;好吧，就先写这么多，睡觉咯～
 
 > 1. [pandoc 用markdown写毕业论文 markdown转pdf,docx](http://blog.csdn.net/phodal/article/details/23381821)
 > 
@@ -343,26 +341,25 @@ pandoc --latex-engine=xelatex --template=pandoc.template 1.md -o 1.pdf
 
 
 
-
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
-<p>唉都快期末了，我居然没事找事花了一个晚上的时间折腾。</p>
+<p> 唉都快期末了，我居然没事找事花了一个晚上的时间折腾。</p>
 
-<p>先是想晚饭时间想简单学学markdown语法，然后突然觉得很有必要用它来写pdf，实验报告什么的就方便多了。</p>
+<p> 先是想晚饭时间想简单学学markdown语法，然后突然觉得很有必要用它来写pdf，实验报告什么的就方便多了。</p>
 
-<p>于是，就开始找，找到了pandoc，恩，好的来装。装完了，报错。哦，没装latex，T_T请原谅我这个逗逼的freshbird～</p>
+<p> 于是，就开始找，找到了pandoc，恩，好的来装。装完了，报错。哦，没装latex，T_T请原谅我这个逗逼的freshbird～</p>
 
-<p>好吧，latex要装啥版本呢？继续找，恩貌似texlive不错，好的我先装个base版的就好，190M+好大的包，慢慢下……装完了！试试～报错= =。好吧肯定是没装完整，我又继续装了extra版本，恩前前后后3次加装，一共500M+应该有吧…为何如此大= =…</p>
+<p> 好吧，latex要装啥版本呢？继续找，恩貌似texlive不错，好的我先装个base版的就好，190M+好大的包，慢慢下……装完了！试试～报错= =。好吧肯定是没装完整，我又继续装了extra版本，恩前前后后3次加装，一共500M+应该有吧…为何如此大= =…</p>
 
-<p>好，总算装完了，试试…还是报错！哦，是不支持中文，一找发现需要CJK包，装完，继续转不了中文pdf…google了很久，发现是xelatex(latex的编译engine之一)没法跟CJK一起用，好吧有个xeCJK，恩继续找方法安装，逛了xeCJK官网，下了个源码包，找不到正确的安装方法，放弃之……然后偶然中发现latex+CJK可以用，原来如此…</p>
+<p> 好，总算装完了，试试…还是报错！哦，是不支持中文，一找发现需要CJK包，装完，继续转不了中文pdf…google了很久，发现是xelatex(latex的编译engine之一)没法跟CJK一起用，好吧有个xeCJK，恩继续找方法安装，逛了xeCJK官网，下了个源码包，找不到正确的安装方法，放弃之……然后偶然中发现latex+CJK可以用，原来如此…</p>
 
-<p>但是没办法啊，我要转markdown一定要用pandoc，pandoc需要xelatex，xelatex又只能用xeCJK，认命，继续找……T_T</p>
+<p> 但是没办法啊，我要转markdown一定要用pandoc，pandoc需要xelatex，xelatex又只能用xeCJK，认命，继续找……T_T</p>
 
-<p>终于！找到了一个blog，终于安装成功，并且，还提供了网友修改好了的template，最终测试成功～总算搭好了环境！</p>
+<p> 终于！找到了一个blog，终于安装成功，并且，还提供了网友修改好了的template，最终测试成功～总算搭好了环境！</p>
 
-<p>接下来记录备忘，同时感谢网上大神的分享：</p>
+<p> 接下来记录备忘，同时感谢网上大神的分享：</p>
 
 <p>1.安装texlive</p>
 
@@ -375,9 +372,7 @@ sudo apt-get install texlive-latex-extra
 <pre><code class="{sh}">sudo apt-get install latex-cjk-xcjk cjk-latex latex-cjk-chinese
 </code></pre>
 
-<p>3.安装必要的中文字体，网上有许多教程</p>
-
-<p>这里引用原文提供的字体</p>
+<p>3.安装必要的中文字体，网上有许多教程，这里引用原文提供的字体</p>
 
 <pre><code class="{sh}">sudo apt-get install xfonts-wqy ttf-wqy-microhei ttf-wqy-zenhei
 </code></pre>
@@ -630,32 +625,32 @@ $endfor$
 </code></pre>
 
 <ul>
-<li>新建1.md文件</li>
+<li>新建1.md文件，由于转义的原因，需要去掉下边<code>\```</code>的<code>\</code></li>
 </ul>
 
 <pre><code class="language-md">#this is my first md file
 
 $x^2=y$
 
-\`\`\`python
+\```python
 import sys
 import time
 import os
 from threading import Thread
 a = Thread()
 print 'hello world'
-\`\`\`
+\```
 
 这是中文字符～
 
-\`\`\`cpp
+\```cpp
 #include &lt;iostream&gt;
 using namespace std;
 int main() {
     cout &lt;&lt; "hello world" &lt;&lt; endl;
     return 0;
 }
-\`\`\`
+\```
 
 </code></pre>
 
@@ -666,7 +661,7 @@ int main() {
 <pre><code class="{sh}">pandoc --latex-engine=xelatex --template=pandoc.template 1.md -o 1.pdf
 </code></pre>
 
-<p>好吧，就先写这么多，睡觉咯～</p>
+<p> 好吧，就先写这么多，睡觉咯～</p>
 
 <blockquote>
   <ol>
