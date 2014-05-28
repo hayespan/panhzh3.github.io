@@ -25,12 +25,655 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
+唉都快期末了，我居然没事找事花了一个晚上的时间折腾。
+
+先是想晚饭时间想简单学学markdown语法，然后突然觉得很有必要用它来写pdf，实验报告什么的就方便多了。
+
+于是，就开始找，找到了pandoc，恩，好的来装。装完了，报错。哦，没装latex，T\_T请原谅我这个逗逼的freshbird～
+
+好吧，latex要装啥版本呢？继续找，恩貌似texlive不错，好的我先装个base版的就好，190M+好大的包，慢慢下……装完了！试试～报错= =。好吧肯定是没装完整，我又继续装了extra版本，恩前前后后3次加装，一共500M+应该有吧…为何如此大= =…
+
+好，总算装完了，试试…还是报错！哦，是不支持中文，一找发现需要CJK包，装完，继续转不了中文pdf…google了很久，发现是xelatex(latex的编译engine之一)没法跟CJK一起用，好吧有个xeCJK，恩继续找方法安装，逛了xeCJK官网，下了个源码包，找不到正确的安装方法，放弃之……然后偶然中发现latex+CJK可以用，原来如此…
+
+但是没办法啊，我要转markdown一定要用pandoc，pandoc需要xelatex，xelatex又只能用xeCJK，认命，继续找……T_T
+
+终于！找到了一个blog，终于安装成功，并且，还提供了网友修改好了的template，最终测试成功～总算搭好了环境！
+
+接下来记录备忘，同时感谢网上大神的分享：
+
+1.安装texlive
+
+```{sh}
+sudo apt-get install texlive
+sudo apt-get install texlive-latex-extra
+```
+
+2.安装xeCJK宏包
+```{sh}
+sudo apt-get install latex-cjk-xcjk cjk-latex latex-cjk-chinese
+```
+
+3.安装必要的中文字体，网上有许多教程
+
+这里引用原文提供的字体
+```{sh}
+sudo apt-get install xfonts-wqy ttf-wqy-microhei ttf-wqy-zenhei
+```
+
+4.后边在模板或tex文档中设置字体时，可用用fc-list查看已安装的所有字体，并设置，避免写错字体名。
+```{sh}
+fc-list | grep YaHei
+```
+
+5.tex文件的示例
+
+* 保存为test.tex
+```{latex}
+% dependencies: xelatex, xecjk package，Courier New字体，wenquanyi中文字体，也可以设置其他的中英文字体
+% Usage: xelatex filename[.tex]
+
+\documentclass[11pt]{article}
+\usepackage[BoldFont,SlantFont,CJKsetspaces,CJKchecksingle]{xeCJK}
+\setmainfont{Courier New} % 设置英文衬线字体
+% \setmonofont{} % 设置英文等宽字体，等宽英文字体大全：http://zh.wikipedia.org/wiki/%E7%AD%89%E5%AE%BD%E5%AD%97%E4%BD%93
+% \setsansfont{} % 设置英文无衬线字体
+\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
+%\setCJKfamilyfont{WenQuanYi Micro Hei} % 与setCJKmainfon t等同，http://bbs.ctex.org/forum.php?mod=viewthread&tid=51057
+\parindent 2em   %段首缩进
+ 
+\begin{document}
+\section{举例}
+\begin{verbatim}
+标点。
+\end{verbatim}
+ 
+汉字Chinese数学$x=y$空格
+\end{document}
+```
+
+* 执行命令，就能生成带有中文字符的pdf了
+```{sh}
+xelatex test.tex
+```
+
+6.markdown文件示例
+
+* 新建[pandoc.template](https://raw.githubusercontent.com/tzengyuxio/pages/gh-pages/pandoc/pm-template.latex)模板文件
+
+```{latex}
+\documentclass[$if(fontsize)$$fontsize$,$endif$$if(lang)$$lang$,$endif$$if(papersize)$$papersize$,$endif$]{$documentclass$}
+\usepackage{geometry} 		% 設定邊界
+\geometry{
+  top=1in,
+  inner=1in,
+  outer=1in,
+  bottom=1in,
+  headheight=3ex,
+  headsep=2ex
+}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[utf8]{inputenc}
+$if(euro)$
+  \usepackage{eurosym}
+$endif$
+\else % if luatex or xelatex
+  \usepackage{fontspec} 	% 允許設定字體
+  \usepackage{xeCJK} 		% 分開設置中英文字型
+  \setCJKmainfont{LiHei Pro} 	% 設定中文字型
+  \setmainfont{Georgia} 	% 設定英文字型
+  \setromanfont{Georgia} 	% 字型
+  \setmonofont{Courier New}
+  \linespread{1.2}\selectfont 	% 行距
+  \XeTeXlinebreaklocale "zh" 	% 針對中文自動換行
+  \XeTeXlinebreakskip = 0pt plus 1pt % 字與字之間加入0pt至1pt的間距，確保左右對整齊
+  \parindent 0em 		% 段落縮進
+  \setlength{\parskip}{20pt} 	% 段落之間的距離
+  \ifxetex
+    \usepackage{xltxtra,xunicode}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+$if(mainfont)$
+    \setmainfont{$mainfont$}
+$endif$
+$if(sansfont)$
+    \setsansfont{$sansfont$}
+$endif$
+$if(monofont)$
+    \setmonofont{$monofont$}
+$endif$
+$if(mathfont)$
+    \setmathfont{$mathfont$}
+$endif$
+\fi
+% use microtype if available
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+$if(geometry)$
+\usepackage[$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
+$endif$
+$if(natbib)$
+\usepackage{natbib}
+\bibliographystyle{plainnat}
+$endif$
+$if(biblatex)$
+\usepackage{biblatex}
+$if(biblio-files)$
+\bibliography{$biblio-files$}
+$endif$
+$endif$
+$if(listings)$
+\usepackage{listings}
+$endif$
+$if(lhs)$
+\lstnewenvironment{code}{\lstset{language=Haskell,basicstyle=\small\ttfamily}}{}
+$endif$
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+$if(verbatim-in-note)$
+\usepackage{fancyvrb}
+$endif$
+$if(tables)$
+\usepackage{longtable}
+$endif$
+$if(graphics)$
+\usepackage{graphicx}
+% We will generate all images so they have a width \maxwidth. This means
+% that they will get their normal width if they fit onto the page, but
+% are scaled down if they would overflow the margins.
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth
+\else\Gin@nat@width\fi}
+\makeatother
+\let\Oldincludegraphics\includegraphics
+\renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=\maxwidth]{#1}}
+$endif$
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={$author-meta$},
+            pdftitle={$title-meta$},
+            colorlinks=true,
+            urlcolor=$if(urlcolor)$$urlcolor$$else$blue$endif$,
+            linkcolor=$if(linkcolor)$$linkcolor$$else$magenta$endif$,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+$if(links-as-notes)$
+% Make links footnotes instead of hotlinks:
+\renewcommand{\href}[2]{#2\footnote{\url{#1}}}
+$endif$
+$if(strikeout)$
+\usepackage[normalem]{ulem}
+% avoid problems with \sout in headers with hyperref:
+\pdfstringdefDisableCommands{\renewcommand{\sout}{}}
+$endif$
+\setlength{\parindent}{0pt}
+%\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+
+\title{\huge 在OSX平台上的XeLaTeX中文測試} % 設置標題，使用巨大字體
+\author{FoolEgg.com} 		% 設置作者
+\date{February 2013} 		% 設置日期
+\usepackage{titling}
+\setlength{\droptitle}{-8em} 	% 將標題移動至頁面的上面
+
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\pagestyle{fancyplain}
+
+$if(numbersections)$
+\setcounter{secnumdepth}{5}
+$else$
+\setcounter{secnumdepth}{0}
+$endif$
+$if(verbatim-in-note)$
+\VerbatimFootnotes % allows verbatim text in footnotes
+$endif$
+$if(lang)$
+\ifxetex
+  \usepackage{polyglossia}
+  \setmainlanguage{$mainlang$}
+\else
+  \usepackage[$lang$]{babel}
+\fi
+$endif$
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+$if(title)$
+\title{$title$}
+$endif$
+\author{$for(author)$$author$$sep$ \and $endfor$}
+\date{$date$}
+
+\begin{document}
+$if(title)$
+\maketitle
+$endif$
+
+$for(include-before)$
+$include-before$
+
+$endfor$
+$if(toc)$
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{$toc-depth$}
+\tableofcontents
+}
+$endif$
+$body$
+
+$if(natbib)$
+$if(biblio-files)$
+$if(biblio-title)$
+$if(book-class)$
+\renewcommand\bibname{$biblio-title$}
+$else$
+\renewcommand\refname{$biblio-title$}
+$endif$
+$endif$
+\bibliography{$biblio-files$}
+
+$endif$
+$endif$
+$if(biblatex)$
+\printbibliography$if(biblio-title)$[title=$biblio-title$]$endif$
+
+$endif$
+$for(include-after)$
+$include-after$
+
+$endfor$
+\end{document}
+```
+
+* 新建1.md文件
+~~~~{md}
+#this is my first md file
+
+$x^2=y$
+
+\`\`\`python
+import sys
+import time
+import os
+from threading import Thread
+a = Thread()
+print 'hello world'
+\`\`\`
+
+这是中文字符～
+
+\`\`\`cpp
+#include <iostream>
+using namespace std;
+int main() {
+    cout << "hello world" << endl;
+    return 0;
+}
+\`\`\`
+
+~~~~
+
+* 执行转换
+```{sh}
+pandoc --latex-engine=xelatex --template=pandoc.template 1.md -o 1.pdf
+```
+
+好吧，就先写这么多，睡觉咯～
+
+> 1. [pandoc 用markdown写毕业论文 markdown转pdf,docx](http://blog.csdn.net/phodal/article/details/23381821)
+> 
+> 2. [Pandoc’s Markdown 語法中文翻譯](http://pages.tzengyuxio.me/pandoc/#pandocs-markdown)
+
+
+
 
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
+<p>唉都快期末了，我居然没事找事花了一个晚上的时间折腾。</p>
 
+<p>先是想晚饭时间想简单学学markdown语法，然后突然觉得很有必要用它来写pdf，实验报告什么的就方便多了。</p>
+
+<p>于是，就开始找，找到了pandoc，恩，好的来装。装完了，报错。哦，没装latex，T_T请原谅我这个逗逼的freshbird～</p>
+
+<p>好吧，latex要装啥版本呢？继续找，恩貌似texlive不错，好的我先装个base版的就好，190M+好大的包，慢慢下……装完了！试试～报错= =。好吧肯定是没装完整，我又继续装了extra版本，恩前前后后3次加装，一共500M+应该有吧…为何如此大= =…</p>
+
+<p>好，总算装完了，试试…还是报错！哦，是不支持中文，一找发现需要CJK包，装完，继续转不了中文pdf…google了很久，发现是xelatex(latex的编译engine之一)没法跟CJK一起用，好吧有个xeCJK，恩继续找方法安装，逛了xeCJK官网，下了个源码包，找不到正确的安装方法，放弃之……然后偶然中发现latex+CJK可以用，原来如此…</p>
+
+<p>但是没办法啊，我要转markdown一定要用pandoc，pandoc需要xelatex，xelatex又只能用xeCJK，认命，继续找……T_T</p>
+
+<p>终于！找到了一个blog，终于安装成功，并且，还提供了网友修改好了的template，最终测试成功～总算搭好了环境！</p>
+
+<p>接下来记录备忘，同时感谢网上大神的分享：</p>
+
+<p>1.安装texlive</p>
+
+<pre><code class="{sh}">sudo apt-get install texlive
+sudo apt-get install texlive-latex-extra
+</code></pre>
+
+<p>2.安装xeCJK宏包</p>
+
+<pre><code class="{sh}">sudo apt-get install latex-cjk-xcjk cjk-latex latex-cjk-chinese
+</code></pre>
+
+<p>3.安装必要的中文字体，网上有许多教程</p>
+
+<p>这里引用原文提供的字体</p>
+
+<pre><code class="{sh}">sudo apt-get install xfonts-wqy ttf-wqy-microhei ttf-wqy-zenhei
+</code></pre>
+
+<p>4.后边在模板或tex文档中设置字体时，可用用fc-list查看已安装的所有字体，并设置，避免写错字体名。</p>
+
+<pre><code class="{sh}">fc-list | grep YaHei
+</code></pre>
+
+<p>5.tex文件的示例</p>
+
+<ul>
+<li>保存为test.tex</li>
+</ul>
+
+<pre><code class="{latex}">% dependencies: xelatex, xecjk package，Courier New字体，wenquanyi中文字体，也可以设置其他的中英文字体
+% Usage: xelatex filename[.tex]
+
+\documentclass[11pt]{article}
+\usepackage[BoldFont,SlantFont,CJKsetspaces,CJKchecksingle]{xeCJK}
+\setmainfont{Courier New} % 设置英文衬线字体
+% \setmonofont{} % 设置英文等宽字体，等宽英文字体大全：http://zh.wikipedia.org/wiki/%E7%AD%89%E5%AE%BD%E5%AD%97%E4%BD%93
+% \setsansfont{} % 设置英文无衬线字体
+\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
+%\setCJKfamilyfont{WenQuanYi Micro Hei} % 与setCJKmainfon t等同，http://bbs.ctex.org/forum.php?mod=viewthread&amp;tid=51057
+\parindent 2em   %段首缩进
+
+\begin{document}
+\section{举例}
+\begin{verbatim}
+标点。
+\end{verbatim}
+
+汉字Chinese数学$x=y$空格
+\end{document}
+</code></pre>
+
+<ul>
+<li>执行命令，就能生成带有中文字符的pdf了</li>
+</ul>
+
+<pre><code class="{sh}">xelatex test.tex
+</code></pre>
+
+<p>6.markdown文件示例</p>
+
+<ul>
+<li>新建<a href="https://raw.githubusercontent.com/tzengyuxio/pages/gh-pages/pandoc/pm-template.latex">pandoc.template</a>模板文件</li>
+</ul>
+
+<pre><code class="{latex}">\documentclass[$if(fontsize)$$fontsize$,$endif$$if(lang)$$lang$,$endif$$if(papersize)$$papersize$,$endif$]{$documentclass$}
+\usepackage{geometry}         % 設定邊界
+\geometry{
+  top=1in,
+  inner=1in,
+  outer=1in,
+  bottom=1in,
+  headheight=3ex,
+  headsep=2ex
+}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[utf8]{inputenc}
+$if(euro)$
+  \usepackage{eurosym}
+$endif$
+\else % if luatex or xelatex
+  \usepackage{fontspec}     % 允許設定字體
+  \usepackage{xeCJK}         % 分開設置中英文字型
+  \setCJKmainfont{LiHei Pro}     % 設定中文字型
+  \setmainfont{Georgia}     % 設定英文字型
+  \setromanfont{Georgia}     % 字型
+  \setmonofont{Courier New}
+  \linespread{1.2}\selectfont     % 行距
+  \XeTeXlinebreaklocale "zh"     % 針對中文自動換行
+  \XeTeXlinebreakskip = 0pt plus 1pt % 字與字之間加入0pt至1pt的間距，確保左右對整齊
+  \parindent 0em         % 段落縮進
+  \setlength{\parskip}{20pt}     % 段落之間的距離
+  \ifxetex
+    \usepackage{xltxtra,xunicode}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+$if(mainfont)$
+    \setmainfont{$mainfont$}
+$endif$
+$if(sansfont)$
+    \setsansfont{$sansfont$}
+$endif$
+$if(monofont)$
+    \setmonofont{$monofont$}
+$endif$
+$if(mathfont)$
+    \setmathfont{$mathfont$}
+$endif$
+\fi
+% use microtype if available
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+$if(geometry)$
+\usepackage[$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
+$endif$
+$if(natbib)$
+\usepackage{natbib}
+\bibliographystyle{plainnat}
+$endif$
+$if(biblatex)$
+\usepackage{biblatex}
+$if(biblio-files)$
+\bibliography{$biblio-files$}
+$endif$
+$endif$
+$if(listings)$
+\usepackage{listings}
+$endif$
+$if(lhs)$
+\lstnewenvironment{code}{\lstset{language=Haskell,basicstyle=\small\ttfamily}}{}
+$endif$
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+$if(verbatim-in-note)$
+\usepackage{fancyvrb}
+$endif$
+$if(tables)$
+\usepackage{longtable}
+$endif$
+$if(graphics)$
+\usepackage{graphicx}
+% We will generate all images so they have a width \maxwidth. This means
+% that they will get their normal width if they fit onto the page, but
+% are scaled down if they would overflow the margins.
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width&gt;\linewidth\linewidth
+\else\Gin@nat@width\fi}
+\makeatother
+\let\Oldincludegraphics\includegraphics
+\renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=\maxwidth]{#1}}
+$endif$
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={$author-meta$},
+            pdftitle={$title-meta$},
+            colorlinks=true,
+            urlcolor=$if(urlcolor)$$urlcolor$$else$blue$endif$,
+            linkcolor=$if(linkcolor)$$linkcolor$$else$magenta$endif$,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+$if(links-as-notes)$
+% Make links footnotes instead of hotlinks:
+\renewcommand{\href}[2]{#2\footnote{\url{#1}}}
+$endif$
+$if(strikeout)$
+\usepackage[normalem]{ulem}
+% avoid problems with \sout in headers with hyperref:
+\pdfstringdefDisableCommands{\renewcommand{\sout}{}}
+$endif$
+\setlength{\parindent}{0pt}
+%\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+
+\title{\huge 在OSX平台上的XeLaTeX中文測試} % 設置標題，使用巨大字體
+\author{FoolEgg.com}         % 設置作者
+\date{February 2013}         % 設置日期
+\usepackage{titling}
+\setlength{\droptitle}{-8em}     % 將標題移動至頁面的上面
+
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\pagestyle{fancyplain}
+
+$if(numbersections)$
+\setcounter{secnumdepth}{5}
+$else$
+\setcounter{secnumdepth}{0}
+$endif$
+$if(verbatim-in-note)$
+\VerbatimFootnotes % allows verbatim text in footnotes
+$endif$
+$if(lang)$
+\ifxetex
+  \usepackage{polyglossia}
+  \setmainlanguage{$mainlang$}
+\else
+  \usepackage[$lang$]{babel}
+\fi
+$endif$
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+$if(title)$
+\title{$title$}
+$endif$
+\author{$for(author)$$author$$sep$ \and $endfor$}
+\date{$date$}
+
+\begin{document}
+$if(title)$
+\maketitle
+$endif$
+
+$for(include-before)$
+$include-before$
+
+$endfor$
+$if(toc)$
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{$toc-depth$}
+\tableofcontents
+}
+$endif$
+$body$
+
+$if(natbib)$
+$if(biblio-files)$
+$if(biblio-title)$
+$if(book-class)$
+\renewcommand\bibname{$biblio-title$}
+$else$
+\renewcommand\refname{$biblio-title$}
+$endif$
+$endif$
+\bibliography{$biblio-files$}
+
+$endif$
+$endif$
+$if(biblatex)$
+\printbibliography$if(biblio-title)$[title=$biblio-title$]$endif$
+
+$endif$
+$for(include-after)$
+$include-after$
+
+$endfor$
+\end{document}
+</code></pre>
+
+<ul>
+<li>新建1.md文件</li>
+</ul>
+
+<pre><code class="language-md">#this is my first md file
+
+$x^2=y$
+
+\`\`\`python
+import sys
+import time
+import os
+from threading import Thread
+a = Thread()
+print 'hello world'
+\`\`\`
+
+这是中文字符～
+
+\`\`\`cpp
+#include &lt;iostream&gt;
+using namespace std;
+int main() {
+    cout &lt;&lt; "hello world" &lt;&lt; endl;
+    return 0;
+}
+\`\`\`
+
+</code></pre>
+
+<ul>
+<li>执行转换</li>
+</ul>
+
+<pre><code class="{sh}">pandoc --latex-engine=xelatex --template=pandoc.template 1.md -o 1.pdf
+</code></pre>
+
+<p>好吧，就先写这么多，睡觉咯～</p>
+
+<blockquote>
+  <ol>
+  <li><p><a href="http://blog.csdn.net/phodal/article/details/23381821">pandoc 用markdown写毕业论文 markdown转pdf,docx</a></p></li>
+  <li><p><a href="http://pages.tzengyuxio.me/pandoc/#pandocs-markdown">Pandoc’s Markdown 語法中文翻譯</a></p></li>
+  </ol>
+</blockquote>
 <!-- content end -->
 </div>
 <br>
